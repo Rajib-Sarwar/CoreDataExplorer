@@ -15,3 +15,17 @@
 - A relationship is a link between multiple entities.
 - An NSManagedObject is a run-time representation of a Core Data entity. It can be read and write to its attributes using Key-Value Coding.
 - It needs an NSManagedObjectContext to save() or fetch(_:) data to and from Core Data.
+
+
+## BowTie
+#### Key Points learned by implementing **BowTie** app
+
+- Core Data supports different attribute data types, which determines the kind of data it can store in the entities and how much space they will occupy on disk.
+  Some common attribute data types are String, Date, and Double.
+- The Binary Data attribute data type gives the option of storing arbitrary amounts of binary data in the data model.
+- The Transformable attribute data type store any object that conforms to NSSecureCoding in your data model.
+- Using an NSManagedObject subclass is a better way to work with a Core Data entity.
+  It can either generate the subclass manually or let Xcode do it automatically.
+- It can refine the set entities fetched by NSFetchRequest using an NSPredicate.
+- It can set validation rules (e.g. maximum value and minimum value) to most attribute data types directly in the data model editor.
+  The managed object context will throw an error if you try to save invalid data.
