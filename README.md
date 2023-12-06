@@ -3,7 +3,7 @@
 #### Welcome to the world of Core Data exploration! This README.md serves as a guide to experiment with various Core Data functionalities through small examples. Let's dive into the intricacies of Core Data, one example at a time. Happy coding! 🚀
 
 ## HitList
-#### Key Points learned by implementing **HitList** app
+#### Basic Core Data implementation
 
 - Core Data provides on-disk persistence, 
   which means data will be accessible even after terminating app or shutting down device.
@@ -18,7 +18,7 @@
 
 
 ## BowTie
-#### Key Points learned by implementing **BowTie** app
+#### NSManagedObject Subclasses
 
 - Core Data supports different attribute data types, which determines the kind of data it can store in the entities and how much space they will occupy on disk.
   Some common attribute data types are String, Date, and Double.
