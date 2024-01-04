@@ -41,5 +41,5 @@
   You can also provide your own backing store with the incremental store API.
 - The **persistent store coordinator** hides the implementation details of how your persistent stores are configured
   and presents a simple interface for your managed object context
-- The managed object context manages the lifecycles of the managed objects it creates or fetches.
+- The **managed object context** manages the lifecycles of the managed objects it creates or fetches.
   They are responsible for fetching, editing and deleting managed objects, as well as more powerful features such as validation, faulting and inverse relationship handling.
