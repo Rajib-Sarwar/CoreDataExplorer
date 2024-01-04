@@ -30,7 +30,7 @@
 - It can set validation rules (e.g. maximum value and minimum value) to most attribute data types directly in the data model editor.
   The managed object context will throw an error if you try to save invalid data.
 
-  ## DogWalk
+## DogWalk
 #### Core Data Stack
 
 - The **Core Data Stack** is made up of five classes:
