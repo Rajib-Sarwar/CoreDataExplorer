@@ -48,6 +48,7 @@
 ## BubbleTeaFinder
 #### Intermediate Fetching
 
+Here are the five different ways to set up a fetch request:
 ```
 // 1
 let fetchRequest1 = NSFetchRequest<Venue>()
