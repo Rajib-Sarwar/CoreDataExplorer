@@ -43,3 +43,47 @@
   and presents a simple interface for your managed object context
 - The **managed object context** manages the lifecycles of the managed objects it creates or fetches.
   They are responsible for fetching, editing and deleting managed objects, as well as more powerful features such as validation, faulting and inverse relationship handling.
+
+
+## BubbleTeaFinder
+#### Intermediate Fetching
+
+```
+// 1
+let fetchRequest1 = NSFetchRequest<Venue>()
+let entity = NSEntityDescription.entity(forEntityName: "Venue" in: managedContext)
+fetchRequest1.entity = entity
+```
+You initialize an instance of NSFetchRequest as generic type: NSFetchRequest<Venue>. 
+At a minimum, you must specify a NSEntityDescription for the fetch request. 
+In this case, the entity is Venue . 
+You initialize an instance of NSEntityDescription and use it to set the fetch request’s entity property.
+```
+// 2
+let fetchRequest2 = NSFetchRequest<Venue>(entityName: "Venue")
+```
+Here you use NSFetchRequest ’s convenience initializer. 
+It initializes a new fetch request and sets its entity property in one step. 
+You simply need to provide a string for the entity name rather than a full-fledged NSEntityDescription .
+```
+// 3
+let fetchRequest3: NSFetchRequest<Venue> = Venue.fetchRequest()
+```
+Just as the second example was a contraction of the first, the third is a contraction of the second. 
+When you generate an NSManagedObject subclass, this step also generates a class method that returns an NSFetchRequest already set up to fetch corresponding entity types. 
+This is where Venue.fetchRequest() comes from. This code lives in **Venue+CoreDataProperties.swift***
+
+```
+// 4
+let fetchRequest4 = managedObjectModel.fetchRequestTemplate(forName: "venueFR")
+```
+In the fourth example, you retrieve your fetch request from your NSManagedObjectModel . You can configure and store commonly used fetch requests in Xcode’s data model editor.
+```
+// 5
+let fetchRequest5 = managedObjectModel.fetchRequestFromTemplate(withName: "venueFR" substitutionVariables: ["NAME": "ViVi Bubble Tea"])
+```
+The last case is similar to the fourth. Retrieve a fetch request from your managed object model, but this time, you pass in some extra variables. 
+These “substitution” variables are used in a predicate to refine your fetched results.
+
+
+  
