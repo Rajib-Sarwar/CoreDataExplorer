@@ -39,6 +39,7 @@ class ViewController: UIViewController {
   lazy var coreDataStack = CoreDataStack(modelName: "BubbleTeaFinder")
   
   var fetchRequest: NSFetchRequest<Venue>?
+  var asyncFetchRequest: NSAsynchronousFetchRequest<Venue>?
   var venues: [Venue] = []
 
   // MARK: - IBOutlets
@@ -55,9 +56,42 @@ class ViewController: UIViewController {
 //      return
 //    }
     
-    self.fetchRequest = Venue.fetchRequest()
-    self.fetchRequest?.resultType = .managedObjectResultType
-    fetchAndReload()
+    let batchUpdate = NSBatchUpdateRequest(entityName: "Venue")
+    batchUpdate.propertiesToUpdate = [#keyPath(Venue.favorite): true]
+    
+    batchUpdate.affectedStores = coreDataStack.managedContext.persistentStoreCoordinator?.persistentStores
+    batchUpdate.resultType = .updatedObjectsCountResultType
+    
+    do {
+      let batchResult = try coreDataStack.managedContext.execute(batchUpdate) as? NSBatchUpdateResult
+      print("Records updated \(String(describing: batchResult?.result))")
+    } catch let error as NSError {
+      print("Could not fetch \(error), \(error.userInfo)")
+    }
+    
+    // MARK: 1
+    let venueFetchRequest: NSFetchRequest<Venue> = Venue.fetchRequest()
+    fetchRequest = venueFetchRequest
+    
+    // MARK: 2
+    asyncFetchRequest = NSAsynchronousFetchRequest(fetchRequest: venueFetchRequest) { [unowned self] (result: NSAsynchronousFetchResult) in
+      guard let venues = result.finalResult else {
+        return
+      }
+      self.venues = venues
+      self.tableView.reloadData()
+    }
+    
+    // MARK: 3
+    do {
+      guard let asyncFetchRequest = asyncFetchRequest else {
+        return
+      }
+      
+      try coreDataStack.managedContext.execute(asyncFetchRequest)
+    } catch let error as NSError {
+      print("Could not fetch \(error), \(error.userInfo)")
+    }
   }
 
   // MARK: - Navigation
