@@ -43,3 +43,98 @@
   and presents a simple interface for your managed object context
 - The **managed object context** manages the lifecycles of the managed objects it creates or fetches.
   They are responsible for fetching, editing and deleting managed objects, as well as more powerful features such as validation, faulting and inverse relationship handling.
+
+
+## BubbleTeaFinder
+#### Intermediate Fetching
+
+Here are the five different ways to set up a fetch request:
+```
+// 1
+let fetchRequest1 = NSFetchRequest<Venue>()
+let entity = NSEntityDescription.entity(forEntityName: "Venue" in: managedContext)
+fetchRequest1.entity = entity
+```
+You initialize an instance of NSFetchRequest as generic type: NSFetchRequest<Venue>. 
+At a minimum, you must specify a NSEntityDescription for the fetch request. 
+In this case, the entity is Venue . 
+You initialize an instance of NSEntityDescription and use it to set the fetch request’s entity property.
+```
+// 2
+let fetchRequest2 = NSFetchRequest<Venue>(entityName: "Venue")
+```
+Here you use NSFetchRequest ’s convenience initializer. 
+It initializes a new fetch request and sets its entity property in one step. 
+You simply need to provide a string for the entity name rather than a full-fledged NSEntityDescription .
+```
+// 3
+let fetchRequest3: NSFetchRequest<Venue> = Venue.fetchRequest()
+```
+Just as the second example was a contraction of the first, the third is a contraction of the second. 
+When you generate an NSManagedObject subclass, this step also generates a class method that returns an NSFetchRequest already set up to fetch corresponding entity types. 
+This is where Venue.fetchRequest() comes from. This code lives in **Venue+CoreDataProperties.swift***
+
+```
+// 4
+let fetchRequest4 = managedObjectModel.fetchRequestTemplate(forName: "venueFR")
+```
+In the fourth example, you retrieve your fetch request from your NSManagedObjectModel . You can configure and store commonly used fetch requests in Xcode’s data model editor.
+```
+// 5
+let fetchRequest5 = managedObjectModel.fetchRequestFromTemplate(withName: "venueFR" substitutionVariables: ["NAME": "ViVi Bubble Tea"])
+```
+The last case is similar to the fourth. Retrieve a fetch request from your managed object model, but this time, you pass in some extra variables. 
+These “substitution” variables are used in a predicate to refine your fetched results.
+
+Fetching different result types:
+
+`NSFetchRequest` has a property named `resultType`. The default value is `.managedObjectResultType`. 
+Here are all the possible values for a fetch request’s resultType :
+
+- `.managedObjectResultType:` Returns managed objects (default value).
+  
+Example:
+
+  ```
+  var venues: [Venue] = []
+  let fetchRequest = NSFetchRequest<Venue>(entityName: "Venue")
+  fetchRequest.resultType = .managedObjectResultType (no need to assign this. It's a default type)
+  
+  do {
+      venues = try coreDataStack.managedContext.fetch(fetchRequest) // On execute, it will fetch the Venue type result managed objects
+    } catch let error as NSError {
+      print("Could not fetch \(error), \(error.userInfo)")
+    }
+
+  ```
+
+- `.countResultType:` Returns the count of the objects matching the fetch request.
+
+Example:
+  ```
+  let fetchRequest = NSFetchRequest<NSNumber>(entityName: "Venue")
+  fetchRequest.resultType = .countResultType
+    
+  do {
+      let countResult = try coreDataStack.managedContext.fetch(fetchRequest) /***
+                                                                              When you set a fetch result’s result type to .countResultType ,
+                                                                              the return value becomes a Swift array containing a single NSNumber.
+                                                                              The integer inside the NSNumber is the total count you’re looking for.
+                                                                              ***/
+      let count = countResult.first?.intValue ?? 0
+  } catch let error as NSError {
+      print("count not fetched \(error), \(error.userInfo)")
+  }
+  ```
+
+- `.dictionaryResultType:` This is a catch-all return type for returning the results of different calculations.
+
+Example:
+```
+
+```
+
+- `.managedObjectIDResultType:` Returns unique identifiers instead of full-fledged managed objects.
+
+```
+  
