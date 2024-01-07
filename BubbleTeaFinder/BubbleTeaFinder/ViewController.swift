@@ -37,6 +37,9 @@ class ViewController: UIViewController {
   private let venueCellIdentifier = "VenueCell"
 
   lazy var coreDataStack = CoreDataStack(modelName: "BubbleTeaFinder")
+  
+  var fetchRequest: NSFetchRequest<Venue>?
+  var venues: [Venue] = []
 
   // MARK: - IBOutlets
   @IBOutlet weak var tableView: UITableView!
@@ -46,12 +49,25 @@ class ViewController: UIViewController {
     super.viewDidLoad()
 
     importJSONSeedDataIfNeeded()
+    
+//    guard let model = coreDataStack.managedContext.persistentStoreCoordinator?.managedObjectModel,
+//          let fetchRequest = model.fetchRequestTemplate(forName: "FetchRequest") as? NSFetchRequest<Venue> else {
+//      return
+//    }
+    
+    self.fetchRequest = Venue.fetchRequest()
+    self.fetchRequest?.resultType = .managedObjectResultType
+    fetchAndReload()
   }
 
   // MARK: - Navigation
   override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-    if segue.identifier == filterViewControllerSegueIdentifier {
+    guard segue.identifier == filterViewControllerSegueIdentifier, let navController = segue.destination as? UINavigationController, let filterVC = navController.topViewController as? FilterViewController else {
+      return
     }
+    
+    filterVC.coreDataStack = coreDataStack
+    filterVC.delegate = self
   }
 }
 
@@ -59,18 +75,33 @@ class ViewController: UIViewController {
 extension ViewController {
   @IBAction func unwindToVenueListViewController(_ segue: UIStoryboardSegue) {
   }
+  
+  func fetchAndReload() {
+    guard let fetchRequest = fetchRequest else {
+      return
+    }
+    
+    do {
+      venues = try coreDataStack.managedContext.fetch(fetchRequest)
+      tableView.reloadData()
+    } catch let error as NSError {
+      print("Could not fetch \(error), \(error.userInfo)")
+    }
+  }
 }
 
 // MARK: - UITableViewDataSource
 extension ViewController: UITableViewDataSource {
   func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    10
+    venues.count
   }
 
   func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
     let cell = tableView.dequeueReusableCell(withIdentifier: venueCellIdentifier, for: indexPath)
-    cell.textLabel?.text = "Bubble Tea Venue"
-    cell.detailTextLabel?.text = "Price Info"
+    
+    let venue = venues[indexPath.row]
+    cell.textLabel?.text = venue.name
+    cell.detailTextLabel?.text = venue.priceInfo?.priceCategory
     return cell
   }
 }
