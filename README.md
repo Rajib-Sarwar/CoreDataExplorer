@@ -86,5 +86,55 @@ let fetchRequest5 = managedObjectModel.fetchRequestFromTemplate(withName: "venue
 The last case is similar to the fourth. Retrieve a fetch request from your managed object model, but this time, you pass in some extra variables. 
 These “substitution” variables are used in a predicate to refine your fetched results.
 
+Fetching different result types:
 
+`NSFetchRequest` has a property named `resultType`. The default value is `.managedObjectResultType`. 
+Here are all the possible values for a fetch request’s resultType :
+
+- `.managedObjectResultType:` Returns managed objects (default value).
+  
+Example:
+
+  ```
+  var venues: [Venue] = []
+  let fetchRequest = NSFetchRequest<Venue>(entityName: "Venue")
+  fetchRequest.resultType = .managedObjectResultType (no need to assign this. It's a default type)
+  
+  do {
+      venues = try coreDataStack.managedContext.fetch(fetchRequest) // On execute, it will fetch the Venue type result managed objects
+    } catch let error as NSError {
+      print("Could not fetch \(error), \(error.userInfo)")
+    }
+
+  ```
+
+- `.countResultType:` Returns the count of the objects matching the fetch request.
+
+Example:
+  ```
+  let fetchRequest = NSFetchRequest<NSNumber>(entityName: "Venue")
+  fetchRequest.resultType = .countResultType
+    
+  do {
+      let countResult = try coreDataStack.managedContext.fetch(fetchRequest) /***
+                                                                              When you set a fetch result’s result type to .countResultType ,
+                                                                              the return value becomes a Swift array containing a single NSNumber.
+                                                                              The integer inside the NSNumber is the total count you’re looking for.
+                                                                              ***/
+      let count = countResult.first?.intValue ?? 0
+  } catch let error as NSError {
+      print("count not fetched \(error), \(error.userInfo)")
+  }
+  ```
+
+- `.dictionaryResultType:` This is a catch-all return type for returning the results of different calculations.
+
+Example:
+```
+
+```
+
+- `.managedObjectIDResultType:` Returns unique identifiers instead of full-fledged managed objects.
+
+```
   
